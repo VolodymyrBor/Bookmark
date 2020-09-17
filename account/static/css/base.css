@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Muli);
+@import url(https://fonts.googleapis.com/css?family=Muli);
 
 body {
     margin:0;
@@ -175,6 +175,7 @@ ul.messages li a.close {
 /* social-auth */
 .social {
     float:right;
+    height: 20px;
 }
 .social li {
     list-style:none;
