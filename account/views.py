@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpRequest
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
-from .forms import LoginForm, UserRegistrationForm
+from .models import Profile
+from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
 
 
 def user_login(request: HttpRequest):
@@ -45,6 +46,7 @@ def register(request: HttpRequest):
         if user_form.is_valid():
             new_user: User = user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
+            Profile.objects.create(user=new_user)
             new_user.save()
             context = {
                 'new_user': new_user
@@ -56,3 +58,25 @@ def register(request: HttpRequest):
         'user_form': user_form,
     }
     return render(request, 'account/register.html', context)
+
+
+@login_required
+def edit(request: HttpRequest):
+    if request.method == 'POST':
+        user_form = UserEditForm(instance=request.user, data=request.POST)
+        profile_form = ProfileEditForm(instance=request.user.profile,
+                                       data=request.POST,
+                                       files=request.FILES)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = ProfileEditForm(instance=request.user.profile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+
+    return render(request, 'account/edit.html', context)
