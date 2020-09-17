@@ -25,12 +25,17 @@ SECRET_KEY = '38b=gw$-t*_8kty(%0e8bpzhfn!1!x7oy&9#%tt4eyq$w+lny%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'bookmark.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django_extensions',
     'account.apps.AccountConfig',
     'django.contrib.auth',
     'django.contrib.admin',
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
 ]
 
 MIDDLEWARE = [
