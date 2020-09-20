@@ -50,5 +50,30 @@
         {% block content %}
         {% endblock content %}
     </div>
+
+    {# JavaScript #}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
+    <script>
+
+        let csrftoken = Cookies.get('csrftoken')
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method))
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        })
+
+        $(document).ready(function () {
+            {% block domready %}
+            {% endblock domready %}
+        })
+    </script>
+
 </body>
 </html>
