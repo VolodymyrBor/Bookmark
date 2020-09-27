@@ -9,6 +9,8 @@ from django.http import HttpResponse, HttpRequest, JsonResponse
 from .models import Profile, Contact
 from common.decorators import ajax_required
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
+from actions.utils import create_action
+from actions.models import Action
 
 
 def user_login(request: HttpRequest):
@@ -37,8 +39,15 @@ def user_login(request: HttpRequest):
 
 @login_required
 def dashboard(request: HttpRequest):
+    actions = Action.objects.exclude(user=request.user)
+    following_ids = request.user.following.values_list('id', flat=True)
+    if following_ids:
+        actions = actions.filter(user_id__in=following_ids)
+    actions = actions.select_related('user', 'user__profile').prefetch_related('target')[:10]
+
     context = {
-        'section': 'dashboard'
+        'section': 'dashboard',
+        'actions': actions,
     }
     return render(request, 'account/dashboard.html', context)
 
@@ -50,6 +59,7 @@ def register(request: HttpRequest):
             new_user: User = user_form.save(commit=False)
             new_user.set_password(user_form.cleaned_data['password'])
             Profile.objects.create(user=new_user)
+            create_action(new_user, 'has created an account')
             new_user.save()
             context = {
                 'new_user': new_user
@@ -118,6 +128,7 @@ def user_follow(request: HttpRequest):
             user = User.objects.get(id=user_id)
             if action == 'follow':
                 Contact.objects.get_or_create(user_from=request.user, user_to=user)
+                create_action(request.user, 'is following', user)
             else:
                 Contact.objects.filter(user_from=request.user, user_to=user).delete()
             return JsonResponse({'status': 'ok'})
