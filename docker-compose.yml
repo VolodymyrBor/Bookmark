@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  redis-master:
+    image: 'bitnami/redis:latest'
+    container_name: 'Redis-Bookmark'
+    ports:
+      - '6379'
+    environment:
+      - REDIS_PASSWORD=root

@@ -176,3 +176,11 @@ SOCIAL_AUTH_TWITTER_SECRET = 'BklFsi3iZpmR9FsVqZ5ajW5YYvvAkBNSQ2BxwiLacDYhsWaJSV
 ABSOLUTE_URL_OVERRIDES = {
     'auth.user': lambda u: reverse_lazy('user_detail', args=[u.username])
 }
+
+
+# Redis
+
+REDIS_HOST = '172.21.0.2'
+REDIS_PORT = '6379'
+REDIS_DB = 0
+REDIS_PASSWORD = 'root'
